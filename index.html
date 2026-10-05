@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SIXPAD">
+  <title>SIXPAD Training Tracker</title>
+  <style>
+    :root{--primary:#4f46e5;--primary2:#4338ca;--bg:#f8fafc;--card:#fff;--text:#1e293b;--muted:#64748b;--line:#e2e8f0;--danger:#e11d48;--core:#4f46e5;--leg:#0284c7;--foot:#0d9488}
+    *{box-sizing:border-box} html{-webkit-text-size-adjust:100%} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+    button,input{font:inherit}.wrap{width:min(100%,980px);margin:auto;padding:18px 14px}.header{text-align:center;margin:6px 0 18px}.header h1{font-size:24px;margin:0}.header p{font-size:12px;color:var(--muted);margin:5px 0 0}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 10px #0f172a0a;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 14px}.devices{display:grid;gap:10px}.device{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:13px;cursor:pointer}.device.selected{border-color:var(--primary);background:#eef2ff}.device input{width:20px;height:20px;accent-color:var(--primary)}.device strong{display:block;font-size:14px}.device small{color:var(--muted)}
+    label.field{font-size:12px;font-weight:700;display:block;margin-bottom:6px}.date{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px;background:white}.primary{width:100%;border:0;border-radius:12px;padding:13px;background:var(--primary);color:white;font-weight:700;margin-top:12px}.primary:active{background:var(--primary2)}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:13px}.stat h3{font-size:12px;margin:0 0 10px}.row{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:7px 0;border-bottom:1px solid #f1f5f9}.row:last-child{border:0}.row b{font-size:11px}
+    .chart{display:flex;align-items:flex-end;gap:16px;height:210px;padding:16px 8px 0;border-bottom:1px solid var(--line)}.barwrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}.bar{width:min(58px,70%);min-height:2px;border-radius:9px 9px 0 0;transition:.25s}.barvalue{font-size:12px;font-weight:700}.barlabel{font-size:10px;text-align:center;height:28px}
+    .monthbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.monthbar button{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 12px}.monthtitle{font-weight:800}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow{text-align:center;color:var(--muted);font-size:10px;padding:4px}.day{min-height:58px;border:1px solid #f1f5f9;border-radius:9px;padding:5px;font-size:11px;background:white}.day.empty{border-color:transparent;background:transparent}.day.today{outline:2px solid #a5b4fc}.dots{display:flex;flex-wrap:wrap;gap:3px;margin-top:7px}.dot{width:7px;height:7px;border-radius:50%}
+    .history{display:grid;gap:8px}.history-item{border:1px solid var(--line);border-radius:13px;padding:11px;display:flex;justify-content:space-between;gap:10px;align-items:center}.history-date{font-size:12px;font-weight:800}.badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.badge{font-size:10px;padding:4px 7px;border-radius:99px;color:white}.delete{border:0;background:#fff1f2;color:var(--danger);border-radius:10px;padding:8px;font-size:12px}.emptymsg{text-align:center;color:var(--muted);font-size:13px;padding:18px}
+    .tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}.secondary{background:white;border:1px solid var(--line);border-radius:12px;padding:11px;font-weight:700;font-size:12px}.danger{color:var(--danger)}
+    .nav{position:fixed;z-index:20;left:0;right:0;bottom:0;background:#fffffff2;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px 8px calc(7px + env(safe-area-inset-bottom));display:flex;justify-content:center}.navin{width:min(100%,620px);display:grid;grid-template-columns:repeat(4,1fr)}.nav button{border:0;background:transparent;color:var(--muted);padding:6px 2px;font-size:10px}.nav button span{display:block;font-size:20px;margin-bottom:2px}.nav button.active{color:var(--primary);font-weight:800}.page{display:none}.page.active{display:block}.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#0f172a;color:white;padding:10px 16px;border-radius:99px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1}
+    @media(min-width:680px){.devices{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(4,1fr)}.wrap{padding:26px}.header h1{font-size:30px}.day{min-height:90px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header"><h1>SIXPAD Training Tracker</h1><p>3種類のSIXPADを、iPhoneでかんたん記録</p></header>
+
+  <main id="record" class="page active">
+    <section class="card"><h2>トレーニングを記録</h2>
+      <div class="devices" id="devices"></div>
+      <div style="margin-top:14px"><label class="field" for="trainingDate">実施日</label><input class="date" id="trainingDate" type="date"></div>
+      <button class="primary" id="saveBtn">選択したデバイスを記録</button>
+    </section>
+    <section class="stats" id="stats"></section>
+  </main>
+
+  <main id="calendarPage" class="page">
+    <section class="card"><div class="monthbar"><button id="prevMonth">‹</button><div class="monthtitle" id="monthTitle"></div><button id="nextMonth">›</button></div><div class="calendar" id="calendar"></div></section>
+    <section class="card"><h2 id="selectedTitle">日付を選択</h2><div id="selectedDetails" class="emptymsg">カレンダーの日付をタップしてください</div></section>
+  </main>
+
+  <main id="analysis" class="page">
+    <section class="card"><h2>トレーニング分析（累計回数）</h2><div class="chart" id="chart"></div></section>
+    <section class="stats" id="analysisStats"></section>
+  </main>
+
+  <main id="historyPage" class="page">
+    <section class="card"><h2>履歴一覧</h2><div id="history" class="history"></div></section>
+    <section class="card"><h2>データ管理</h2><div class="tools"><button class="secondary" id="exportBtn">バックアップ保存</button><button class="secondary" id="importBtn">バックアップ読込</button><button class="secondary danger" id="clearBtn" style="grid-column:1/-1">全履歴を削除</button></div><input id="fileInput" type="file" accept="application/json" hidden><p style="font-size:11px;color:var(--muted);margin:10px 0 0">データはこの端末のブラウザ内に保存されます。定期的なバックアップをおすすめします。</p></section>
+  </main>
+</div>
+<nav class="nav"><div class="navin">
+  <button class="active" data-page="record"><span>＋</span>記録</button><button data-page="calendarPage"><span>▦</span>カレンダー</button><button data-page="analysis"><span>▥</span>分析</button><button data-page="historyPage"><span>☰</span>履歴</button>
+</div></nav><div id="toast" class="toast"></div>
+<script>
+const DEVICES={core:{name:'Core Belt 2',part:'腹部',minutes:23,color:'#4f46e5'},leg:{name:'Leg Belt 2',part:'太もも',minutes:15,color:'#0284c7'},foot:{name:'Foot Fit 3 Heat',part:'足裏・ふくらはぎ',minutes:15,color:'#0d9488'}};
+const KEY='sixpad_tracker_records_v1'; let viewDate=new Date();
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function localISO(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function records(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function put(v){localStorage.setItem(KEY,JSON.stringify(v))}
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
+function renderDevices(){ $('#devices').innerHTML=Object.entries(DEVICES).map(([k,d])=>`<label class="device"><input type="checkbox" value="${k}"><span><strong>${d.name}</strong><small>部位：${d.part} ／ ${d.minutes}分 / 回</small></span></label>`).join(''); $$('.device input').forEach(i=>i.onchange=()=>i.parentElement.classList.toggle('selected',i.checked)); }
+function save(){const chosen=$$('.device input:checked').map(x=>x.value),date=$('#trainingDate').value;if(!chosen.length)return alert('デバイスを1つ以上選択してください。');if(!date)return alert('実施日を選択してください。');const a=records();chosen.forEach(device=>a.push({id:(window.crypto&&typeof window.crypto.randomUUID==='function'?window.crypto.randomUUID():Date.now()+'_'+Math.random().toString(36).slice(2)),date,device,minutes:DEVICES[device].minutes,createdAt:new Date().toISOString()}));put(a);$$('.device input').forEach(i=>{i.checked=false;i.parentElement.classList.remove('selected')});renderAll();toast('記録しました');}
+function periodData(type){const a=records(),now=new Date(),today=localISO(now);let start;if(type==='week'){start=new Date(now);const n=(now.getDay()+6)%7;start.setDate(now.getDate()-n);start.setHours(0,0,0,0)}return a.filter(r=>{const d=new Date(r.date+'T00:00:00');if(type==='today')return r.date===today;if(type==='week')return d>=start&&d<=now;if(type==='month')return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();return d.getFullYear()===now.getFullYear()})}
+function statCard(title,a){const count=k=>a.filter(r=>r.device===k);return `<article class="stat"><h3>${title}</h3>${Object.entries(DEVICES).map(([k,d])=>{const v=count(k);return `<div class="row"><b>${d.name}</b><span>${v.length}回 (${v.reduce((s,r)=>s+r.minutes,0)}分)</span></div>`}).join('')}</article>`}
+function renderStats(){const cards=[['本日',periodData('today')],['今週（月〜）',periodData('week')],['今月',periodData('month')],['今年',periodData('year')]].map(x=>statCard(...x)).join('');$('#stats').innerHTML=cards;$('#analysisStats').innerHTML=cards}
+function renderChart(){const a=records(),counts=Object.keys(DEVICES).map(k=>a.filter(r=>r.device===k).length),max=Math.max(...counts,1);$('#chart').innerHTML=Object.entries(DEVICES).map(([k,d],i)=>`<div class="barwrap"><div class="barvalue">${counts[i]}回</div><div class="bar" style="height:${Math.max(2,counts[i]/max*145)}px;background:${d.color}"></div><div class="barlabel">${d.name}</div></div>`).join('')}
+function renderCalendar(){const y=viewDate.getFullYear(),m=viewDate.getMonth();$('#monthTitle').textContent=`${y}年 ${m+1}月`;const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=first.getDay(),a=records();let h=['日','月','火','水','木','金','土'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<offset;i++)h+='<div class="day empty"></div>';for(let day=1;day<=days;day++){const date=localISO(new Date(y,m,day)),rs=a.filter(r=>r.date===date);h+=`<button class="day ${date===localISO()?'today':''}" data-date="${date}">${day}<span class="dots">${rs.map(r=>`<i class="dot" style="background:${DEVICES[r.device].color}"></i>`).join('')}</span></button>`}$('#calendar').innerHTML=h;$$('.day[data-date]').forEach(b=>b.onclick=()=>showDay(b.dataset.date));}
+function showDay(date){const a=records().filter(r=>r.date===date);$('#selectedTitle').textContent=date.replaceAll('-','/');$('#selectedDetails').innerHTML=a.length?a.map(r=>`<div class="history-item"><div><b>${DEVICES[r.device].name}</b><div style="font-size:11px;color:var(--muted);margin-top:4px">部位：${DEVICES[r.device].part} ／ ${r.minutes}分</div></div></div>`).join(''):'<div class="emptymsg">記録はありません</div>'}
+function remove(id){if(!confirm('この記録を削除しますか？'))return;put(records().filter(r=>r.id!==id));renderAll();toast('削除しました')}
+function renderHistory(){const a=records().sort((x,y)=>y.date.localeCompare(x.date)||y.createdAt.localeCompare(x.createdAt));$('#history').innerHTML=a.length?a.map(r=>`<div class="history-item"><div><div class="history-date">${r.date.replaceAll('-','/')}</div><div class="badges"><span class="badge" style="background:${DEVICES[r.device].color}">${DEVICES[r.device].name}・${DEVICES[r.device].part}・${r.minutes}分</span></div></div><button class="delete" data-id="${r.id}">削除</button></div>`).join(''):'<div class="emptymsg">履歴がありません</div>';$$('.delete').forEach(b=>b.onclick=()=>remove(b.dataset.id))}
+function renderAll(){renderStats();renderChart();renderCalendar();renderHistory()}
+function exportData(){const blob=new Blob([JSON.stringify({app:'SIXPAD Training Tracker',version:1,exportedAt:new Date().toISOString(),records:records()},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`sixpad-backup-${localISO()}.json`;a.click();URL.revokeObjectURL(a.href);toast('バックアップを保存しました')}
+function importData(file){const rd=new FileReader();rd.onload=()=>{try{const x=JSON.parse(rd.result),a=Array.isArray(x)?x:x.records;if(!Array.isArray(a))throw 0;if(!confirm(`${a.length}件のデータを読み込み、現在の履歴を置き換えますか？`))return;put(a);renderAll();toast('読み込みました')}catch{alert('有効なバックアップファイルではありません。')}};rd.readAsText(file)}
+renderDevices();$('#trainingDate').value=localISO();$('#saveBtn').onclick=save;$('#prevMonth').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);renderCalendar()};$('#nextMonth').onclick=()=>{viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);renderCalendar()};
+$$('.nav button').forEach(b=>b.onclick=()=>{$$('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.page').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.page).classList.add('active');window.scrollTo(0,0)});
+$('#exportBtn').onclick=exportData;$('#importBtn').onclick=()=>$('#fileInput').click();$('#fileInput').onchange=e=>e.target.files[0]&&importData(e.target.files[0]);$('#clearBtn').onclick=()=>{if(confirm('すべての履歴を削除しますか？この操作は元に戻せません。')){put([]);renderAll();toast('全履歴を削除しました')}};renderAll();
+</script></body></html>
